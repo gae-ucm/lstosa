@@ -189,6 +189,12 @@ def data_sequence_argparser():
         default=False,
         help="Do not produce DL2 files (default False)",
     )
+    parser.add_argument(
+        "--no-dl1ab",
+        action="store_true",
+        default=False,
+        help="Do not launch the script lstchain_dl1ab (default False)",
+    )
     parser.add_argument("--pedcal-file", type=Path, help="Path of the calibration file")
     parser.add_argument("--drs4-pedestal-file", type=Path, help="Path of the DRS4 pedestal file")
     parser.add_argument("--time-calib-file", type=Path, help="Path of the time calibration file")
@@ -210,6 +216,12 @@ def data_sequence_argparser():
         type=Path,
         help="Path to a file containing the ids of the interleaved pedestal events",
     )
+    parser.add_argument(
+        "--rf-model-path",
+        type=Path,
+        default=None,
+        help="Path to the RF models for the DL2 production",
+    )
     parser.add_argument("run_number", help="Number of the run to be processed")
     parser.add_argument("tel_id", choices=["ST", "LST1", "LST2"])
     return parser
@@ -227,7 +239,9 @@ def data_sequence_cli_parsing():
     options.simulate = opts.simulate
     options.prod_id = opts.prod_id
     options.no_dl2 = opts.no_dl2
+    options.no_dl1ab = opts.no_dl1ab
     options.tel_id = opts.tel_id
+    options.rf_model_path = opts.rf_model_path
 
     log.debug(f"The options and arguments are {opts}")
 
@@ -246,6 +260,7 @@ def data_sequence_cli_parsing():
         opts.run_summary,
         opts.pedestal_ids_file,
         opts.run_number,
+        opts.rf_model_path,
     )
 
 
@@ -273,6 +288,12 @@ def sequencer_argparser():
         action="store_true",
         default=False,
         help="Do not produce DL2 files (default False)",
+    )
+    parser.add_argument(
+        "--no-dl1ab",
+        action="store_true",
+        default=False,
+        help="Do not launch the script lstchain_dl1ab (default False)",
     )
     parser.add_argument(
         "--no-gainsel",
@@ -305,6 +326,7 @@ def sequencer_cli_parsing():
     options.no_submit = opts.no_submit
     options.no_calib = opts.no_calib
     options.no_dl2 = opts.no_dl2
+    options.no_dl1ab = opts.no_dl1ab
     options.no_gainsel = opts.no_gainsel
     options.force_submit = opts.force_submit
 

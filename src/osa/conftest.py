@@ -574,10 +574,78 @@ def database(osa_dir):
 
 
 @pytest.fixture(scope="session")
-def gain_selection_flag_file(osa_dir):
+def rf_models_allsky_basedir(base_test_dir):
+    directory = base_test_dir / "models/AllSky"
+    directory.mkdir(parents=True, exist_ok=True)
+    return directory
 
+
+@pytest.fixture(scope="session")
+def rf_model_path(rf_models_allsky_basedir):
+    mc_prod = "20240131_allsky_v0.10.5_all_dec_base"
+    declination_str = "dec_2276"
+    rf_model_path = rf_models_allsky_basedir / mc_prod / declination_str
+    rf_model_path.mkdir(parents=True, exist_ok=True)
+    return rf_model_path
+
+  
+@pytest.fixture(scope="session")
+def gain_selection_flag_file(osa_dir):
     GainSel_dir = osa_dir / "GainSel" / "20200117"
     GainSel_dir.mkdir(parents=True, exist_ok=True)
     file = GainSel_dir / "GainSelFinished.txt"
     file.touch()
     return file
+
+
+@pytest.fixture(scope="session")
+def catB_closed_file(running_analysis_dir):
+
+    catB_closed_file = running_analysis_dir / "catB_00003.closed"
+    catB_closed_file.touch()
+    return catB_closed_file
+
+
+@pytest.fixture(scope="session")
+def catB_calib_base_dir(monitoring_dir):
+
+    catB_calib_base_dir = monitoring_dir / "PixelCalibration" / "Cat-B"
+    catB_calib_base_dir.mkdir(parents=True, exist_ok=True)
+    return catB_calib_base_dir
+
+
+@pytest.fixture(scope="session")
+def catB_calibration_file(catB_calib_dir):
+
+    catB_calib_dir = catB_calib_base_dir / "calibration" / nightdir / prod_id
+    catB_calib_file = catB_calib_dir / "cat_B_calibration_filters_52.Run00003.h5"
+    catB_calib_file.touch()
+    return catB_calib_file
+
+
+@pytest.fixture(scope="session")
+def dl1b_config_file(running_analysis_dir):
+    config_information = dedent(
+        """\
+            {
+            "tailcuts_clean_with_pedestal_threshold": {
+                "picture_thresh": 8,
+                "boundary_thresh": 4,
+                "sigma": 2.5,
+                "keep_isolated_pixels": false,
+                "min_number_picture_neighbors": 2,
+                "use_only_main_island": false,
+                "delta_time": 2
+            },
+            "dynamic_cleaning": {
+                "apply": true,
+                "threshold": 267,
+                "fraction_cleaning_intensity": 0.03
+            }
+        }"""
+    )
+    config_file = running_analysis_dir / "dl1ab_Run00003.json"
+    config_file.touch()
+    config_file.write_text(config_information)
+    return config_file
+
